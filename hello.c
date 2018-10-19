@@ -7,8 +7,11 @@
 #include <stdio.h>
 #include "logo.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+
+//#include <SDL2/SDL.h>
+//#include <SDL2/SDL_syswm.h>
 
 extern bool entry_process_events(uint32_t* _width, uint32_t* _height, uint32_t* _debug, uint32_t* _reset);
 
@@ -38,40 +41,74 @@ int main(int32_t _argc, char** _argv) {
   init.callback = &callback;
 
 
-  if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) { printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() ); }
 
-  SDL_Window *window = SDL_CreateWindow("bgfx"
-      , SDL_WINDOWPOS_UNDEFINED
-      , SDL_WINDOWPOS_UNDEFINED
-      , 1280
-      , 720
-      , SDL_WINDOW_SHOWN
-      | SDL_WINDOW_RESIZABLE
-      );
+  GLFWwindow* window;
 
-  if( window == NULL ) { printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
-  } else  {
-    //Get window surface
-    SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
-    //Fill the surface white
-    SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0xFF, 0xFF, 0xFF ) ); //Update the surface
-    SDL_UpdateWindowSurface( window );
-    //Wait two seconds
-    SDL_Delay( 2000 );
-  }
+    /* Initialize the library */
+    if (!glfwInit()) return -1;
 
-  SDL_SysWMinfo wmi;
+    /* Create a windowed mode window and its OpenGL context */
+    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    if (!window) {
+        glfwTerminate();
+        return -1;
+    }
 
+    /* Make the window's context current */
+    glfwMakeContextCurrent(window);
+
+    /* Loop until the user closes the window */
+    while (!glfwWindowShouldClose(window))
+    {
+        /* Render here */
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        /* Swap front and back buffers */
+        glfwSwapBuffers(window);
+
+        /* Poll for and process events */
+        glfwPollEvents();
+    }
 
   bgfx_platform_data_t pd;
-  pd.ndt          = wmi.info.x11.display;
-  pd.nwh          = (void*)(uintptr_t)wmi.info.x11.window;
+  pd.ndt          = glfwGetX11Display();
+  pd.nwh          = glfwNativeWindowHandle(window);
   pd.context      = NULL;
   pd.backBuffer   = NULL;
   pd.backBufferDS = NULL;
+
+  // SDL
+  // if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) { printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() ); }
+
+  // SDL_Window *window = SDL_CreateWindow("bgfx"
+  //     , SDL_WINDOWPOS_UNDEFINED
+  //     , SDL_WINDOWPOS_UNDEFINED
+  //     , 1280
+  //     , 720
+  //     , SDL_WINDOW_SHOWN
+  //     | SDL_WINDOW_RESIZABLE
+  //     );
+
+  // if( window == NULL ) { printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
+  // } else  {
+  //   //Get window surface
+  //   SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+  //   //Fill the surface white
+  //   SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0xFF, 0xFF, 0xFF ) ); //Update the surface
+  //   SDL_UpdateWindowSurface( window );
+  //   //Wait two seconds
+  //   SDL_Delay( 2000 );
+  // }
+  // SDL_SysWMinfo wmi;
+  // bgfx_platform_data_t pd;
+  // pd.ndt          = wmi.info.x11.display;
+  // pd.nwh          = (void*)(uintptr_t)wmi.info.x11.window;
+  // pd.context      = NULL;
+  // pd.backBuffer   = NULL;
+  // pd.backBufferDS = NULL;
+
   init.platformData = pd;
 
-  //bgfx_set_platform_data(pd);
 
 	bgfx_init_ctor(&init);
 
