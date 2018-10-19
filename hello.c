@@ -7,11 +7,18 @@
 #include <stdio.h>
 #include "logo.h"
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+
 extern bool entry_process_events(uint32_t* _width, uint32_t* _height, uint32_t* _debug, uint32_t* _reset);
 
 uint16_t uint16_max(uint16_t _a, uint16_t _b)
 {
 	return _a < _b ? _b : _a;
+}
+
+void onFatal(bgfx_callback_interface_t* _this, const char* _filePath, uint16_t _line, bgfx_fatal_t _code, const char* _str) {
+  printf("on fatal error\n");
 }
 
 int main(int32_t _argc, char** _argv) {
@@ -22,11 +29,55 @@ int main(int32_t _argc, char** _argv) {
 	(void)_argc;
 	(void)_argv;
 
-	bgfx_init_t init;
+  bgfx_init_t init;
+  bgfx_callback_vtbl_t vtbl;
+  vtbl.fatal = onFatal;
+  bgfx_callback_interface_t callback;
+  callback.vtbl = &vtbl;
+
+  init.callback = &callback;
+
+
+  if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) { printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() ); }
+
+  SDL_Window *window = SDL_CreateWindow("bgfx"
+      , SDL_WINDOWPOS_UNDEFINED
+      , SDL_WINDOWPOS_UNDEFINED
+      , 1280
+      , 720
+      , SDL_WINDOW_SHOWN
+      | SDL_WINDOW_RESIZABLE
+      );
+
+  if( window == NULL ) { printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
+  } else  {
+    //Get window surface
+    SDL_Surface* screenSurface = SDL_GetWindowSurface( window );
+    //Fill the surface white
+    SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0xFF, 0xFF, 0xFF ) ); //Update the surface
+    SDL_UpdateWindowSurface( window );
+    //Wait two seconds
+    SDL_Delay( 2000 );
+  }
+
+  SDL_SysWMinfo wmi;
+
+
+  bgfx_platform_data_t pd;
+  pd.ndt          = wmi.info.x11.display;
+  pd.nwh          = (void*)(uintptr_t)wmi.info.x11.window;
+  pd.context      = NULL;
+  pd.backBuffer   = NULL;
+  pd.backBufferDS = NULL;
+  init.platformData = pd;
+
+  //bgfx_set_platform_data(pd);
+
 	bgfx_init_ctor(&init);
 
-    printf("initialized BGFX ctor\n");
+  printf("initialized BGFX ctor\n");
 
+    printf("initializing BGFX...\n");
 	bgfx_init(&init);
     printf("initialized BGFX\n");
 	bgfx_reset(width, height, reset, init.resolution.format);
