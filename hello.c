@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include "logo.h"
 
+#define GLFW_EXPOSE_NATIVE_GLX
+#define GLFW_EXPOSE_NATIVE_X11
+
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
@@ -72,7 +75,7 @@ int main(int32_t _argc, char** _argv) {
 
   bgfx_platform_data_t pd;
   pd.ndt          = glfwGetX11Display();
-  pd.nwh          = glfwNativeWindowHandle(window);
+  pd.nwh          = (void*)(uintptr_t)glfwGetX11Window(window);
   pd.context      = NULL;
   pd.backBuffer   = NULL;
   pd.backBufferDS = NULL;

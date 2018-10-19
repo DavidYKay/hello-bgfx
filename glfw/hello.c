@@ -1,6 +1,10 @@
 #include <stdio.h>
-#include <GLFW/glfw3native.h>
+
+#define GLFW_EXPOSE_NATIVE_GLX
+#define GLFW_EXPOSE_NATIVE_X11
+
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 
 int main(int32_t _argc, char** _argv) {
   GLFWwindow* window;
