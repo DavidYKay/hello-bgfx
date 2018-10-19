@@ -43,8 +43,6 @@ int main(int32_t _argc, char** _argv) {
 
   init.callback = &callback;
 
-
-
   GLFWwindow* window;
 
     /* Initialize the library */
@@ -60,18 +58,16 @@ int main(int32_t _argc, char** _argv) {
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
-        glfwPollEvents();
-    }
+    ///* Loop until the user closes the window */
+    //while (!glfwWindowShouldClose(window))
+    //{
+    //    /* Render here */
+    //    glClear(GL_COLOR_BUFFER_BIT);
+    //    /* Swap front and back buffers */
+    //    glfwSwapBuffers(window);
+    //    /* Poll for and process events */
+    //    glfwPollEvents();
+    //}
 
   bgfx_platform_data_t pd;
   pd.ndt          = glfwGetX11Display();
