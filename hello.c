@@ -66,12 +66,12 @@ int main(int32_t _argc, char** _argv) {
   pd.backBufferDS = NULL;
 
   // hypothesis: these structs are not properly initialized
-  init.platformData = pd;
 
   // printf("init: %s\n", init);
   // printf("platformdata: %s\n", pd);
 
   bgfx_init_ctor(&init);
+  init.platformData = pd;
 
   printf("initialized BGFX ctor\n");
 
